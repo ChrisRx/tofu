@@ -2,17 +2,24 @@ package client
 
 import (
 	"bytes"
+	//"fmt"
 	"io"
 	"log"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"tofu/proto"
+
+	"github.com/ChrisRx/tofu/proto"
 )
 
 const (
 	address = "localhost:50051"
 )
+
+// This client is not the correct abstraction. This should probably be part of
+// the block package instead.  The real client will be the one that interacts
+// at the file-level, not the block level and provides the actual friendly
+// client API
 
 type TofuClient struct {
 	conn *grpc.ClientConn
@@ -46,13 +53,21 @@ func (t *TofuClient) GetBlock(hash string) ([]byte, error) {
 			return nil, err
 		}
 		bb.Write(b.Data)
-		log.Printf("%s", b.Data)
 	}
 	return bb.Bytes(), nil
 }
 
-// Break files into componets at top level THEN client/server
-func (t *TofuClient) PutBlock() {
+// Break files into components at top level THEN client/server
+func (t *TofuClient) PutBlock(b []byte) (*tofu.Block, error) {
+	stream, err := t.c.PutBlock(context.Background())
+	if err := stream.Send(&tofu.BytesValue{Data: b}); err != nil {
+		return nil, err
+	}
+	r, err := stream.CloseAndRecv()
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
 }
 
 func (t *TofuClient) ListBlocks() []*tofu.Block {

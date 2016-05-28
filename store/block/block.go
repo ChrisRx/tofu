@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"tofu/proto"
+	"github.com/ChrisRx/tofu/proto"
 
 	//"golang.org/x/net/context"
 	"github.com/satori/go.uuid"
@@ -21,6 +21,10 @@ type BlockStore struct {
 }
 
 func NewBlockStore() *BlockStore {
+	if _, err := os.Stat("data"); os.IsNotExist(err) {
+		log.Printf("Data dir does not exist, creating ...\n")
+		os.Mkdir("data", 0777)
+	}
 	return &BlockStore{
 		root: "data",
 	}
@@ -53,7 +57,7 @@ func (b *BlockStore) PutBlock(stream tofu.BlockStore_PutBlockServer) error {
 			if _, err := os.Stat(p); err == nil {
 				log.Printf("Block %s already exists.", result.Hash)
 			}
-			err := ioutil.WriteFile(p, bb.Bytes(), 644)
+			err := ioutil.WriteFile(p, bb.Bytes(), 0644)
 			if err != nil {
 				log.Println(err)
 			}
@@ -68,20 +72,16 @@ func (b *BlockStore) PutBlock(stream tofu.BlockStore_PutBlockServer) error {
 			log.Println(err)
 		}
 		log.Printf("Added %d bytes\n", n)
-		//log.Printf("%s", b.Data)
 	}
 	return nil
 }
 
-//func (b *BlockStore) ListBlocks(ctx context.Context, in *tofu.ListBlockRequest) error {
 func (b *BlockStore) ListBlocks(listBlocksRequest *tofu.ListBlocksRequest, stream tofu.BlockStore_ListBlocksServer) error {
 	files, err := ioutil.ReadDir(b.root)
 	if err != nil {
 		log.Println("Hi: ", err)
 	}
 	for _, f := range files {
-		//dir, file := filepath.Split(f.Name())
-		log.Printf("Name: %s\n", f.Name())
 		if err := stream.Send(&tofu.Block{Hash: f.Name()}); err != nil {
 			return err
 		}
