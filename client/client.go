@@ -1,97 +1,73 @@
 package client
 
 import (
-	"bytes"
+	//"bytes"
+	"bufio"
 	//"fmt"
-	"io"
+	//"io"
 	"log"
+	"os"
 
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 
+	"github.com/ChrisRx/tofu/block"
 	"github.com/ChrisRx/tofu/proto"
+	"github.com/ChrisRx/tofu/volume"
 )
-
-const (
-	address = "localhost:50051"
-)
-
-// This client is not the correct abstraction. This should probably be part of
-// the block package instead.  The real client will be the one that interacts
-// at the file-level, not the block level and provides the actual friendly
-// client API
 
 type TofuClient struct {
-	conn *grpc.ClientConn
-	c    tofu.BlockStoreClient
+	b *block.Client
+	v *volume.Client
 }
 
 func NewTofuClient() *TofuClient {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	c := tofu.NewBlockStoreClient(conn)
+	b := block.NewClient()
+	v := volume.NewClient()
 	return &TofuClient{
-		conn: conn,
-		c:    c,
+		b: b,
+		v: v,
 	}
 }
 
-func (t *TofuClient) GetBlock(hash string) ([]byte, error) {
-	stream, err := t.c.GetBlock(context.Background(), &tofu.Block{Hash: hash})
+func (t *TofuClient) GetFile(path string) ([]byte, error) {
+	f, err := t.v.C.GetFile(context.Background(), &tofu.File{Path: path})
 	if err != nil {
-		log.Fatalf("could not get block: %v", err)
-	}
-	bb := new(bytes.Buffer)
-	for {
-		b, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		bb.Write(b.Data)
-	}
-	return bb.Bytes(), nil
-}
-
-// Break files into components at top level THEN client/server
-func (t *TofuClient) PutBlock(b []byte) (*tofu.Block, error) {
-	stream, err := t.c.PutBlock(context.Background())
-	if err := stream.Send(&tofu.BytesValue{Data: b}); err != nil {
+		log.Println(err)
 		return nil, err
 	}
-	r, err := stream.CloseAndRecv()
-	if err != nil {
-		return nil, err
+	for _, block := range f.Blocks.Block {
+		log.Println(block)
 	}
-	return r, nil
+	return nil, nil
 }
 
-func (t *TofuClient) ListBlocks() []*tofu.Block {
-	stream, err := t.c.ListBlocks(context.Background(), &tofu.ListBlocksRequest{})
+func (t *TofuClient) PutFile(path string) {
+	fs, err := os.Open(path)
 	if err != nil {
-		log.Fatalf("could not get block list: %v", err)
+		log.Fatal(err)
 	}
-	results := []*tofu.Block{}
+	reader := bufio.NewReader(fs)
+	buf := make([]byte, 2048)
+	f := &tofu.FileInfo{
+		File: &tofu.File{Path: path},
+		Blocks: &tofu.Blocks{
+			Block: []*tofu.Block{},
+		},
+	}
 	for {
-		b, err := stream.Recv()
-		if err == io.EOF {
+		data, _ := reader.Read(buf)
+		if data == 0 {
 			break
 		}
+		block, err := t.b.PutBlock(buf)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("%s", b.Hash)
-		results = append(results, b)
+		f.Blocks.Block = append(f.Blocks.Block, block)
 	}
-	return results
-}
-
-func (t *TofuClient) Close() {
-	if t.conn != nil {
-		t.conn.Close()
+	a, err := t.v.C.PutFile(context.Background(), f)
+	if err != nil {
+		log.Println(err)
 	}
+	log.Println(a)
 }

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package tofu;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+import "proto/common.proto";
+import "proto/block.proto";
+
+message File {
+  string path = 1;
+}
+
+message FileInfo {
+  File file = 1;
+  Blocks blocks = 2;
+}
+
+service VolumeStore {
+  rpc GetFile (File) returns (FileInfo) {}
+  rpc PutFile (FileInfo) returns (FileInfo) {}
+  rpc ListFiles (EmptyValue) returns (stream FileInfo) {}
+}

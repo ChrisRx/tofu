@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package tofu;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+
+message BytesValue {
+  bytes data = 1;
+}
+
+message EmptyValue {
+}

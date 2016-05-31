@@ -9,11 +9,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ChrisRx/tofu/proto"
-
 	//"golang.org/x/net/context"
 	"github.com/satori/go.uuid"
 	"google.golang.org/grpc"
+
+	"github.com/ChrisRx/tofu/proto"
 )
 
 type BlockStore struct {
@@ -76,7 +76,7 @@ func (b *BlockStore) PutBlock(stream tofu.BlockStore_PutBlockServer) error {
 	return nil
 }
 
-func (b *BlockStore) ListBlocks(listBlocksRequest *tofu.ListBlocksRequest, stream tofu.BlockStore_ListBlocksServer) error {
+func (b *BlockStore) ListBlocks(emptyValue *tofu.EmptyValue, stream tofu.BlockStore_ListBlocksServer) error {
 	files, err := ioutil.ReadDir(b.root)
 	if err != nil {
 		log.Println("Hi: ", err)

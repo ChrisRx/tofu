@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package tofu;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+import "proto/common.proto";
+
+message Block {
+  string hash = 1;
+}
+
+message Blocks {
+  repeated Block block = 1;
+}
+
+service BlockStore {
+  rpc GetBlock (Block) returns (stream BytesValue) {}
+  rpc PutBlock (stream BytesValue) returns (Block) {}
+  rpc ListBlocks (EmptyValue) returns (stream Block) {}
+}
