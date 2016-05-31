@@ -11,8 +11,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/ChrisRx/tofu/block"
 	"github.com/ChrisRx/tofu/proto"
+	"github.com/ChrisRx/tofu/store"
 )
 
 var (
@@ -20,13 +20,12 @@ var (
 )
 
 type Volume struct {
-	b *block.Client
+	store *store.Store
 
 	files map[string]*tofu.FileInfo
 }
 
 func New() *Volume {
-	b := block.NewClient()
 	f := make(map[string]*tofu.FileInfo)
 	return &Volume{
 		b:     b,
