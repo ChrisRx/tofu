@@ -9,6 +9,19 @@ import (
 	"github.com/ChrisRx/tofu/client"
 )
 
+func ClientCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "client",
+		Usage: "",
+		Flags: []cli.Flag{},
+		Subcommands: []*cli.Command{
+			GetCommand(),
+			ListCommand(),
+			PutCommand(),
+		},
+	}
+}
+
 func GetCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "get",
@@ -54,19 +67,6 @@ func PutCommand() *cli.Command {
 			}
 			t.PutFile(c.Args().First())
 			return nil
-		},
-	}
-}
-
-func ClientCommand() *cli.Command {
-	return &cli.Command{
-		Name:  "client",
-		Usage: "",
-		Flags: []cli.Flag{},
-		Subcommands: []*cli.Command{
-			GetCommand(),
-			ListCommand(),
-			PutCommand(),
 		},
 	}
 }

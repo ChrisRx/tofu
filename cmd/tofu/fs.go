@@ -12,12 +12,12 @@ func FileSystemCommand() *cli.Command {
 		Name:    "mount",
 		Aliases: []string{"m"},
 		Usage:   "mount TofuFS to sub-directory",
-		//Flags: []cli.Flag{
-		//cli.BoolFlag{
-		//Name:  "readonly, r",
-		//Usage: "mount file system as read-only",
-		//},
-		//},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "readonly, r",
+				Usage: "mount file system as read-only",
+			},
+		},
 		Action: func(c *cli.Context) error {
 			// Should check if dir exists or not.
 			// Maybe check to ensure that only relative path is allowed also.

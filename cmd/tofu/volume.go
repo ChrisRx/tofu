@@ -1,12 +1,21 @@
 package main
 
 import (
-	//"log"
-
 	"gopkg.in/urfave/cli.v2"
 
 	"github.com/ChrisRx/tofu/volume"
 )
+
+func VolumeCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "volume",
+		Usage: "",
+		Flags: []cli.Flag{},
+		Subcommands: []*cli.Command{
+			RunCommand(),
+		},
+	}
+}
 
 func RunCommand() *cli.Command {
 	return &cli.Command{
@@ -17,17 +26,6 @@ func RunCommand() *cli.Command {
 			s := volume.New()
 			s.Run()
 			return nil
-		},
-	}
-}
-
-func VolumeCommand() *cli.Command {
-	return &cli.Command{
-		Name:  "volume",
-		Usage: "",
-		Flags: []cli.Flag{},
-		Subcommands: []*cli.Command{
-			RunCommand(),
 		},
 	}
 }

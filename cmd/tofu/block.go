@@ -8,6 +8,20 @@ import (
 	"github.com/ChrisRx/tofu/block"
 )
 
+func BlockCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "block",
+		Usage: "",
+		Flags: []cli.Flag{},
+		Subcommands: []*cli.Command{
+			BlockGetCommand(),
+			BlockListCommand(),
+			BlockPutCommand(),
+			BlockRunCommand(),
+		},
+	}
+}
+
 func BlockGetCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "get",
@@ -69,20 +83,6 @@ func BlockRunCommand() *cli.Command {
 			s := block.NewBlockStore()
 			s.Run()
 			return nil
-		},
-	}
-}
-
-func BlockCommand() *cli.Command {
-	return &cli.Command{
-		Name:  "block",
-		Usage: "",
-		Flags: []cli.Flag{},
-		Subcommands: []*cli.Command{
-			BlockGetCommand(),
-			BlockListCommand(),
-			BlockPutCommand(),
-			BlockRunCommand(),
 		},
 	}
 }

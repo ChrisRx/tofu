@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"bazil.org/fuse"
-	"golang.org/x/net/context"
 )
 
 type File struct {

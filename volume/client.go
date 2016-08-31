@@ -1,12 +1,8 @@
 package volume
 
 import (
-	//"bytes"
-	//"fmt"
-	//"io"
 	"log"
 
-	//"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/ChrisRx/tofu/proto"
@@ -32,8 +28,3 @@ func NewClient() *Client {
 		C:    c,
 	}
 }
-
-//func (t *TofuClient) GetFile(path string) ([]byte, error) {
-//}
-//func (t *TofuClient) PutFile(path string) {
-//}

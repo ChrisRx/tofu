@@ -1,14 +1,14 @@
 package client
 
 import (
-	//"bytes"
 	"bufio"
-	//"fmt"
-	//"io"
+	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
-
-	"golang.org/x/net/context"
+	"path/filepath"
 
 	"github.com/ChrisRx/tofu/block"
 	"github.com/ChrisRx/tofu/proto"
@@ -36,7 +36,11 @@ func (t *TofuClient) GetFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	for _, block := range f.Blocks.Block {
-		log.Println(block)
+		data, err := ioutil.ReadFile(filepath.Join("data", block.Hash))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s", data)
 	}
 	return nil, nil
 }
@@ -46,8 +50,8 @@ func (t *TofuClient) PutFile(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	reader := bufio.NewReader(fs)
-	buf := make([]byte, 2048)
+	r := bufio.NewReader(fs)
+	buf := make([]byte, 0, 2048)
 	f := &tofu.FileInfo{
 		File: &tofu.File{Path: path},
 		Blocks: &tofu.Blocks{
@@ -55,9 +59,16 @@ func (t *TofuClient) PutFile(path string) {
 		},
 	}
 	for {
-		data, _ := reader.Read(buf)
-		if data == 0 {
-			break
+		n, err := r.Read(buf[:cap(buf)])
+		buf = buf[:n]
+		if n == 0 {
+			if err == nil {
+				continue
+			}
+			if err == io.EOF {
+				break
+			}
+			log.Fatal(err)
 		}
 		block, err := t.b.PutBlock(buf)
 		if err != nil {

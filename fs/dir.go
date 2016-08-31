@@ -1,10 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
-
-	"golang.org/x/net/context"
 
 	"bazil.org/fuse"
 	fusefs "bazil.org/fuse/fs"

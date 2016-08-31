@@ -7,14 +7,15 @@ import (
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "tofu"
-	app.Usage = "The cruelty-free elephant alternative."
-	app.Commands = []*cli.Command{
-		ClientCommand(),
-		BlockCommand(),
-		ServerCommand(),
-		VolumeCommand(),
+	app := cli.App{
+		Name:  "tofu",
+		Usage: "The cruelty-free elephant alternative.",
+		Commands: []*cli.Command{
+			ClientCommand(),
+			BlockCommand(),
+			ServerCommand(),
+			VolumeCommand(),
+		},
 	}
 	app.Run(os.Args)
 }

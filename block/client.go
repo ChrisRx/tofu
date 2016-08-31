@@ -2,11 +2,10 @@ package block
 
 import (
 	"bytes"
-	//"fmt"
+	"context"
 	"io"
 	"log"
 
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/ChrisRx/tofu/proto"

@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	//"golang.org/x/net/context"
 	"github.com/satori/go.uuid"
 	"google.golang.org/grpc"
 

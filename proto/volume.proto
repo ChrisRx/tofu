@@ -3,9 +3,12 @@ syntax = "proto3";
 package tofu;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-
 import "proto/common.proto";
 import "proto/block.proto";
+
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
 
 message File {
   string path = 1;
