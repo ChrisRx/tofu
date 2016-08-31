@@ -3,7 +3,7 @@
 
 ## Building
 
-```
+```shell
 make
 ```
 
@@ -11,18 +11,18 @@ make
 
 Running the volume and block stores with the embedded etcd metadata store:
 
-```Shell
+```shell
 bin/tofu server
 ```
 
 Put a file:
 
-```Shell
+```shell
 bin/tofu client put <filename>
 ```
 
 Get that file:
 
-```Shell
+```shell
 bin/tofu client get <filename>
 ```
